@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+
+require 'facter'
+
+Facter.add('<%= @name %>') do
+  <% @confine.each do |fact,value| -%>
+  confine :<%= fact %> => '<%= value.gsub("'","\'") %>'
+  <% end -%>
+
+  setcode do
+    test = '<%= @interpreter %> <%= @test_dir %>/<%= @title %>'
+    output = Facter::Core::Execution.execute(test)
+    result['tests'][test] = Hash.new
+    result['tests'][test]['result'] = if output == '<%= @expect_output.gsub("'","\'") %>'
+                                        'pass'
+                                      else
+                                        result['result'] = 'fail'
+                                        result['tests'][test]['is'] = output
+                                        'fail'
+                                      end
+
+    result
+  end
+end
