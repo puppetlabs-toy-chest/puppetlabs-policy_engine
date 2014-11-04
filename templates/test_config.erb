@@ -1,5 +1,6 @@
 ---
-expect_output: <%= @expect_output.to_yaml.gsub(/^--- /,'') %>
+expect_stdout: <%= @expect_stdout.to_yaml.gsub(/^--- /,'') %>
+expect_stderr: <%= @expect_stderr.to_yaml.gsub(/^--- /,'') %>
 expect_exit_code: <%= @expect_exit_code %>
 expect_format: <%= @expect_format %>
 interpreter: <%= @interpreter %>

@@ -1,6 +1,7 @@
 define policy_engine::test (
   $confine = undef,
-  $expect_output = '',
+  $expect_stdout = '',
+  $expect_stderr = '',
   $expect_exit_code = 0,
   $expect_format = 'string',
   $code = undef,

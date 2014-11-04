@@ -1,6 +1,6 @@
 class rhel_6_stig::no_blank_passwords(
   $source = 'puppet:///modules/rhel_6_stig/no_blank_passwords.rb',
-  $expect_output = [],
+  $expect_stdout = [],
   $expect_format = 'json',
   $tag = [],
 ) inherits rhel_6_stig {
@@ -12,7 +12,7 @@ class rhel_6_stig::no_blank_passwords(
   policy_engine::test { 'no_blank_passwords':
     source        => $source,
     interpreter   => 'ruby',
-    expect_output => $expect_output,
+    expect_stdout => $expect_output,
     expect_format => $expect_format,
     tag           => $tags_real,
   }

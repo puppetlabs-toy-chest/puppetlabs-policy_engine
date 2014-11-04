@@ -6,5 +6,5 @@ policy_engine::test { 'V-38462':
     'osfamily' => 'Redhat'
   },
   code          => 'grep nosignature /etc/rpmrc /usr/lib/rpm/rpmrc /usr/lib/rpm/rpmrc ~root/.rpmrc',
-  expect_output => '',
+  expect_stdout => '',
 }

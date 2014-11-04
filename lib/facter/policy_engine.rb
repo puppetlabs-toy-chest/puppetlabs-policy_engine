@@ -75,7 +75,7 @@ tests.each do |test|
 
       execution_result = parse_output :format => test['config']['expect_format'], :output => execution_output
 
-      result = process_result :expectation => test['config']['expect_output'], :result => execution_result
+      result = process_result :expectation => test['config']['expect_stdout'], :result => execution_result
 
       apply_tags :tags => test['config']['tag'], :result => result
     end
