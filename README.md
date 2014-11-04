@@ -13,10 +13,12 @@ the expectation, the test fails.
 Each test result is a structured value in a standard format. The output format is as follows:
 
 **If the test passed**
-{'result' => 'passed', 'tags' => ['tag1','tag2']}
+
+`{'result' => 'passed', 'tags' => ['tag1','tag2']}`
 
 **If the test fails**
-{'result' => 'failed', 'tags' => ['tag1','tag2'], 'expected_output' => [], 'is' => ['example','output']}
+
+`{'result' => 'failed', 'tags' => ['tag1','tag2'], 'expected_output' => [], 'is' => ['example','output']}`
 
 ##Declaring Tests 
 Tests can be written in any language the system they run on supports. The code
@@ -30,14 +32,18 @@ To validate a test passes or fails, an expectation can be specified. An expectat
 * Exit code. The exit code of the script execution
 
 **Execute a command and expect no output**
+```
 policy_engine::test { 'name_of_test':
   code          => 'single command to run',
   expect_stdout => '',
 }
+```
 
 **Execute a python script and expect an empty array in JSON**
+```
 policy_engine::test { 'another_test':
   source  => 'puppet:///modules/corp_policy/another_test.py',
   expect_stdout => [],
   expect_format => 'json',
 }
+```
