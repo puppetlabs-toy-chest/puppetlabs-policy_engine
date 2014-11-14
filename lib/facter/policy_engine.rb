@@ -1,13 +1,32 @@
 require 'yaml'
 require 'json'
+require 'puppet'
 
 def policy_fact_config
-  unless File.exists?('/etc/puppet/policy.yaml')
-    @config = Hash.new
-    @config['test_directory'] = "#{Puppet[:vardir]}/policies"
+  return @config if @config
+
+  begin
+    Puppet.initialize_settings
+  rescue
   end
 
-  @config ||= YAML.load_file('/etc/puppet/policy.yaml')
+  defaults = {
+    :test_dir => "#{Puppet[:vardir]}/policy_tests"
+  }
+
+  cfg = Hash.new
+
+  file = if File.directory?('/etc/puppetlabs/puppet')
+           '/etc/puppetlabs/puppet/policy_engine/config.yml'
+         else
+           '/etc/puppet/policy_engine/config.yml'
+         end
+
+  if File.exists?(file)
+    cfg = YAML::load file
+  end
+
+  @config = defaults.merge(cfg)
 end
 
 def tests
@@ -15,43 +34,54 @@ def tests
 
   @tests = Array.new
 
-  Dir["#{policy_fact_config['test_directory']}/*"].each do |test_file|
-    name = File.basename(test_file).split('.').first
-    config = YAML.load_file("/etc/puppet/policies/#{name}.yaml")
+  Dir["#{policy_fact_config[:test_dir]}/metadata/*"].each do |test_file|
+    name = File.basename(test_file, '.yml')
+    payload = "#{policy_fact_config[:test_dir]}/payloads/#{name}"
 
-    @tests << {'name' => name, 'config' => config, 'location' => test_file}
+    config = YAML.load_file(test_file)
+
+    @tests << {'name' => name, 'config' => config, 'payload' => payload}
   end
 
   @tests
 end
 
 def parse_output(options)
-  format = options[:format]
-  output = options[:output]
+  format = options[:output_format]
+  output = options[:stdout]
 
   case format
-  when 'string'
+  when :string
     output
-  when 'yaml'
+  when :yaml
     YAML::load output
-  when 'json'
+  when :json
     JSON::parse output
   end
 end
 
 def process_result(options)
-  expectation = options[:expectation]
-  result = options[:result]
+  output = options[:output]
+  exit_code = options[:exit_code]
+  expected_exit_code = options[:expected_exit_code]
+  expected_output = options[:expected_output]
 
   processed_result = Hash.new
 
-  if result == expectation
+  expectations = if expected_exit_code
+                   {:expect => 'expected_exit_code', :expectation => expected_exit_code, :is => exit_code}
+                 else
+                   {:expect => 'expected_output', :expectation => expected_output, :is => output}
+                 end
+
+  if expectations[:expectation] == expectations[:is]
     processed_result['result'] = 'pass'
   else
     processed_result['result'] = 'fail'
-    processed_result['is'] = result
-    processed_result['expected_output'] = expectation
+    processed_result['is'] = expectations[:is]
+    processed_result[expectations[:expect]] = expectations[:expectation]
   end
+
   processed_result
 end
 
@@ -65,19 +95,19 @@ end
 
 tests.each do |test|
   Facter.add(test['name']) do
-    test['config']['confine'].each do |fact,value|
-      confine fact.to_sym => value
-    end
-
     setcode do
-      test_execution = "#{test['config']['interpreter']} #{test['location']} 2> /dev/null"
-      execution_output = Facter::Core::Execution.execute(test_execution)
+      test_execution = "#{test['config'][:interpreter]} #{test['payload']} 2> /dev/null"
+      output = Puppet::Util::Execution.execute(test_execution)
+      exit_code = output.exitstatus
 
-      execution_result = parse_output :format => test['config']['expect_format'], :output => execution_output
+      execution_result = parse_output :output_format => test['config'][:output_format], :stdout => output
 
-      result = process_result :expectation => test['config']['expect_stdout'], :result => execution_result
+      result = process_result :expected_exit_code => test['config'][:expected_exit_code], 
+        :expected_output => test['config'][:expected_output], 
+        :output => execution_result, 
+        :exit_code => exit_code
 
-      apply_tags :tags => test['config']['tag'], :result => result
+      apply_tags :tags => test['config'][:tags], :result => result
     end
   end
 end
