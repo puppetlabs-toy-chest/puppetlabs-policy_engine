@@ -5,25 +5,24 @@ require 'puppet'
 def policy_fact_config
   return @config if @config
 
+  # If the fact is called by Facter, we need to initialize Puppet's settings
+  # If the fact is called by Puppet, the settings are already initialized and
+  # Puppet#initialize_settings throws an exception
   begin
     Puppet.initialize_settings
   rescue
   end
 
   defaults = {
-    :test_dir => "#{Puppet[:vardir]}/policy_tests"
+    'test_dir' => "#{Puppet[:vardir]}/policy_tests"
   }
 
   cfg = Hash.new
 
-  file = if File.directory?('/etc/puppetlabs/puppet')
-           '/etc/puppetlabs/puppet/policy_engine/config.yml'
-         else
-           '/etc/puppet/policy_engine/config.yml'
-         end
+  file = "#{Facter.value(:policy_engine_config_dir)}/config.yml"
 
   if File.exists?(file)
-    cfg = YAML::load file
+    cfg = YAML::load( IO.read(file) )
   end
 
   @config = defaults.merge(cfg)
@@ -34,9 +33,9 @@ def tests
 
   @tests = Array.new
 
-  Dir["#{policy_fact_config[:test_dir]}/metadata/*"].each do |test_file|
+  Dir["#{policy_fact_config['test_dir']}/metadata/*"].each do |test_file|
     name = File.basename(test_file, '.yml')
-    payload = "#{policy_fact_config[:test_dir]}/payloads/#{name}"
+    payload = "#{policy_fact_config['test_dir']}/payloads/#{name}"
 
     config = YAML.load_file(test_file)
 
@@ -51,12 +50,14 @@ def parse_output(options)
   output = options[:stdout]
 
   case format
-  when :string
+  when 'string'
     output
-  when :yaml
+  when 'yaml'
     YAML::load output
-  when :json
+  when 'json'
     JSON::parse output
+  else
+    warn "Unknown format #{format}"
   end
 end
 

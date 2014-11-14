@@ -2,25 +2,29 @@ class policy_engine (
   $test_dir = "${::puppet_vardir}/policy_tests",
 ) {
 
-  file { '/etc/puppet/policy.yaml':
+  file { $::policy_engine_config_dir:
+    ensure  => directory,
+  }
+
+  file { "${::policy_engine_config_dir}/config.yml":
+    ensure  => file,
     content => template('policy_engine/policy_config.erb'),
-    owner   => 0,
-    group   => 0,
+    mode    => 0440,
   }
 
   file { $test_dir:
     ensure  => directory,
-    purge   => true,
-    recurse => true,
-    owner   => 0,
-    group   => 0,
   }
 
-  file { '/etc/puppet/policies':
+  file { "${test_dir}/metadata":
     ensure  => directory,
-    purge   => true,
     recurse => true,
-    owner   => 0,
-    group   => 0,
+    purge   => true,
+  }
+
+  file { "${test_dir}/payloads":
+    ensure  => directory,
+    recurse => true,
+    purge   => true,
   }
 }
