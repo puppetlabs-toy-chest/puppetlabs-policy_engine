@@ -90,6 +90,8 @@ def apply_tags(options)
   tags = [*options[:tags]]
   result = options[:result]
 
+  tags << 'policy_engine'
+
   result['tags'] = tags
   result
 end
@@ -98,7 +100,7 @@ tests.each do |test|
   Facter.add(test['name']) do
     setcode do
       test_execution = "#{test['config'][:interpreter]} #{test['payload']} 2> /dev/null"
-      output = Puppet::Util::Execution.execute(test_execution)
+      output = Puppet::Util::Execution.execute(test_execution, :failonfail => false)
       exit_code = output.exitstatus
 
       execution_result = parse_output :output_format => test['config'][:output_format], :stdout => output
