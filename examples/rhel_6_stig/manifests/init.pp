@@ -1,5 +1,3 @@
-class rhel_6_stig {
-  Policy_engine::Test {
-    confine => { 'osfamily' => 'Redhat' }
-  }
+class rhel_6_stig { 
+  include policy_engine
 }
