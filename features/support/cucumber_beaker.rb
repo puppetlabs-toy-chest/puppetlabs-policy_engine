@@ -10,7 +10,7 @@ class Cucumber::Beaker
   end
 
   def logger
-    @@logger ||= ::Beaker::Logger.new
+    @@logger ||= ::Beaker::Logger.new('/dev/null', options)
   end
 
   def options
@@ -28,7 +28,9 @@ class Cucumber::Beaker
   def setup(args = [])
     options_parser = ::Beaker::Options::Parser.new
     @@options = options_parser.parse_args(args)
-    @@options[:logger] = ::Beaker::Logger.new(@@options)
+    @@options[:quiet] = true
+    @@options[:log_level] = :warn
+    @@options[:logger] = ::Beaker::Logger.new('/dev/null', @@options)
   end
 
   def provision(options)
