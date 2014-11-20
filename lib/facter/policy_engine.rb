@@ -70,23 +70,21 @@ def process_result(options)
   processed_result = Hash.new
 
   expectations = if expected_exit_code
-                   expected_exit_code = begin
-                                          equality_method = :==
-                                          Integer(expected_exit_code)
-                                        rescue
-                                          equality_method = :include?
-                                          Array(expected_exit_code).map do |code|
-                                            Integer(code)
-                                          end
-                                        end
-
-                   {:expect => 'expected_exit_code', :expectation => expected_exit_code, :is => exit_code}
+                   if expected_exit_code.is_a?(String)
+                     {:expect => 'expected_exit_code', :expectation => Integer(expected_exit_code), :is => exit_code, :method => :==}
+                   elsif expected_exit_code.is_a?(Array)
+                     expected_exit_code = expected_exit_code.map { |e| Integer(e) }
+                     {:expect => 'expected_exit_code', :expectation => expected_exit_code, :is => exit_code, :method => :include?}
+                   end
                  else
-                   equality_method = :==
-                   {:expect => 'expected_output', :expectation => expected_output, :is => output}
+                   if expected_output.is_a?(Array)
+                     {:expect => 'expected_output', :expectation => expected_output, :is => output, :method => :include?}
+                   elsif expected_output.is_a?(String)
+                     {:expect => 'expected_output', :expectation => expected_output, :is => output, :method => :==}
+                   end
                  end
 
-  if expectations[:expectation].send(equality_method, expectations[:is])
+  if expectations[:expectation].send(expectations[:method], expectations[:is])
     processed_result['result'] = 'pass'
   else
     processed_result['result'] = 'fail'

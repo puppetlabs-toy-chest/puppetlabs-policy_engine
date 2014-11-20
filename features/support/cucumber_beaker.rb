@@ -38,13 +38,16 @@ class Cucumber::Beaker
 
     if @expected_output.is_a?(String)
       @expected_output = "''" if @expected_output.empty?
-      @expected_output = @expected_output.gsub("'",'\'')
+      @expected_output = @expected_output.gsub("'","\'")
+      @expected_output = "'#{@expected_output}'"
+    elsif @expected_output.is_a?(Array)
+      @expected_output.map! { |e| String(e) }
     end
 
     @script = @script.gsub("'",'\'') if @script
     @interpreter = @interpreter.gsub("'",'\'') if @interpreter
 
-    parameters << "expected_output => '#{@expected_output}'," if @expected_output
+    parameters << "expected_output => #{@expected_output}," if @expected_output
     parameters << "expected_exit_code => #{@expected_exit_code}," if @expected_exit_code
     parameters << "script => '#{@script}'," if @script
     parameters << "source => '#{@source}'," if @source
@@ -62,8 +65,14 @@ class Cucumber::Beaker
     puppet_module_install opts
   end
 
+  def puppet_installed?
+    shell("puppet --version").exit_code == 0
+  end
+
   def install_puppet_on_all_hosts
-    if default.is_pe?; then install_pe; else install_puppet; end
+    unless puppet_installed?
+      if default.is_pe?; then install_pe; else install_puppet; end
+    end
   end
 
   def install_masters
