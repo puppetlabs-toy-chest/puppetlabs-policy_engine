@@ -1,3 +1,4 @@
+require "minitest/autorun"
 require 'beaker'
 require 'rspec'
 require 'rspec/expectations'
@@ -30,17 +31,20 @@ options = defaults.merge(env_vars)
 # process options to construct beaker command string
 nodesetfile = options[:nodesetfile] || File.join('features/nodesets',"#{options[:nodeset]}.yml")
 fresh_nodes = options[:provision] == 'no' ? '--no-provision' : nil
+keep_nodes = options[:destroy] == 'no' ? ['--preserve-hosts','always'] : nil
 keyfile = options[:keyfile] ? ['--keyfile', options[:keyfile]] : nil
-debug = options[:debug] ? ['--log-level', 'debug'] : nil
+debug = options[:log_level] ? ['--log-level', 'debug'] : nil
 
 bkr = Cucumber::Beaker.new
 
 #Create the environment
-bkr.setup([fresh_nodes, '--hosts', nodesetfile, keyfile, debug].flatten.compact)
+bkr.setup([fresh_nodes, keep_nodes, '--hosts', nodesetfile, keyfile, debug].flatten.compact)
 bkr.provision bkr.environment
   
 #Install Puppet and current module
 bkr.install_puppet_on_all_hosts
+bkr.install_masters
+bkr.set_hosts
 bkr.puppet_module_install_on_all_hosts(:source => proj_root, :module_name => 'policy_engine')
 
 #Use Cucumber::Beaker class as World
@@ -51,4 +55,15 @@ bkr.puppet_module_install_on_all_hosts(:source => proj_root, :module_name => 'po
 #overwrites the Cucumber#step method
 World do
   Cucumber::Beaker.new
+end
+
+Before do
+  @script = nil
+  @source = nil
+  @expected_output = nil
+  @expected_exit_code = nil
+  @test_name = nil
+  @ensure = nil
+  @interpreter = nil
+  @tag = nil
 end
