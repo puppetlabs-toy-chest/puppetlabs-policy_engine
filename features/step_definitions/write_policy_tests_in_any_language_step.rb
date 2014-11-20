@@ -1,6 +1,5 @@
 Given(/^a policy test using the inline script is declared$/) do
   @test_name = 'inline_script'
-  @script = @command
 end
 
 Given(/^a policy test using the external script is declared$/) do
