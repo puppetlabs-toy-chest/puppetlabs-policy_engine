@@ -8,5 +8,6 @@ HOSTS:
     box:  puppetlabs/centos-6.5-64-nocm
     hypervisor: vagrant
     provider: vmware_fusion
+    ip: 10.255.105.95
 CONFIG:
   type: foss
