@@ -70,12 +70,23 @@ def process_result(options)
   processed_result = Hash.new
 
   expectations = if expected_exit_code
+                   expected_exit_code = begin
+                                          equality_method = :==
+                                          Integer(expected_exit_code)
+                                        rescue
+                                          equality_method = :include?
+                                          Array(expected_exit_code).map do |code|
+                                            Integer(code)
+                                          end
+                                        end
+
                    {:expect => 'expected_exit_code', :expectation => expected_exit_code, :is => exit_code}
                  else
+                   equality_method = :==
                    {:expect => 'expected_output', :expectation => expected_output, :is => output}
                  end
 
-  if expectations[:expectation] == expectations[:is]
+  if expectations[:expectation].send(equality_method, expectations[:is])
     processed_result['result'] = 'pass'
   else
     processed_result['result'] = 'fail'

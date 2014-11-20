@@ -16,6 +16,11 @@ module Puppet::Parser::Functions
     if expected_exit_code =~ /^[0-9]+/
       cfg[:expected_exit_code] = Integer(expected_exit_code)
       cfg.delete(:expected_output)
+    elsif expected_exit_code.is_a?(Array)
+      cfg[:expected_exit_code] = expected_exit_code.map do |code|
+        Integer(code)
+      end
+      cfg.delete(:expected_output)
     end
 
     cfg.to_yaml
