@@ -9,7 +9,7 @@ class Cucumber::Beaker
   def policy_engine_config
     return @config if @config
 
-    pluginsync 
+    #pluginsync 
 
     defaults = {
       'test_dir' => "#{shell("facter -p puppet_vardir").stdout.chomp}/policy_tests"
@@ -41,7 +41,13 @@ class Cucumber::Beaker
       @expected_output = @expected_output.gsub("'","\'")
       @expected_output = "'#{@expected_output}'"
     elsif @expected_output.is_a?(Array)
-      @expected_output.map! { |e| String(e) }
+      @expected_output.map! do |e| 
+        if e.is_a?(Regexp)
+          e = e.inspect
+        else
+          String(e)
+        end
+      end
     end
 
     @script = @script.gsub("'",'\'') if @script
@@ -63,6 +69,7 @@ class Cucumber::Beaker
 
   def puppet_module_install_on_all_hosts(opts)
     puppet_module_install opts
+    pluginsync
   end
 
   def puppet_installed?

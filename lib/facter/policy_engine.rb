@@ -61,38 +61,69 @@ def parse_output(options)
   end
 end
 
+def format_result(result, is, expectation, should)
+  if result == 'pass'
+    {'result' => result}
+  else
+    {'result' => result, 'is' => is, expectation => should}
+  end
+end
+
+def process_exit_code_result(exit_code, expected_exit_code)
+  test_result = if expected_exit_code.is_a?(Integer)
+                  expected_exit_code == exit_code ? 'pass' : 'fail'
+                elsif expected_exit_code.is_a?(Array)
+                  expected_exit_code = expected_exit_code.map { |e| Integer(e) }
+                  expected_exit_code.include?(exit_code) ? 'pass' : 'fail'
+                end
+
+  format_result(test_result, exit_code, 'expected_exit_code', expected_exit_code)
+end
+
+def is_regex?(string)
+  string[0] == '/' and string[-1] == '/'
+end
+
+def parse_regex(regex)
+  new_regex = regex.dup
+  new_regex[0] = ''
+  new_regex[-1] = ''
+  Regexp.new(new_regex)
+end
+
+def process_output_result(output, expected_output)
+  test_result = 'fail'
+
+  if expected_output.is_a?(Array)
+    expected_output.each do |e|
+      if (is_regex?(e) and output =~ parse_regex(e)) or output == e
+        test_result = 'pass'
+        break
+      end
+    end
+  elsif expected_output.is_a?(String)
+    if is_regex?(expected_output)
+      test_result = output =~ parse_regex(expected_output) ? 'pass' : 'fail'
+    else
+      test_result = output == expected_output ? 'pass' : 'fail'
+    end
+  end
+
+  format_result(test_result, output, 'expected_output', expected_output)
+end
+
 def process_result(options)
   output = options[:output]
   exit_code = options[:exit_code]
   expected_exit_code = options[:expected_exit_code]
   expected_output = options[:expected_output]
 
-  processed_result = Hash.new
 
-  expectations = if expected_exit_code
-                   if expected_exit_code.is_a?(String)
-                     {:expect => 'expected_exit_code', :expectation => Integer(expected_exit_code), :is => exit_code, :method => :==}
-                   elsif expected_exit_code.is_a?(Array)
-                     expected_exit_code = expected_exit_code.map { |e| Integer(e) }
-                     {:expect => 'expected_exit_code', :expectation => expected_exit_code, :is => exit_code, :method => :include?}
-                   end
-                 else
-                   if expected_output.is_a?(Array)
-                     {:expect => 'expected_output', :expectation => expected_output, :is => output, :method => :include?}
-                   elsif expected_output.is_a?(String)
-                     {:expect => 'expected_output', :expectation => expected_output, :is => output, :method => :==}
-                   end
-                 end
-
-  if expectations[:expectation].send(expectations[:method], expectations[:is])
-    processed_result['result'] = 'pass'
-  else
-    processed_result['result'] = 'fail'
-    processed_result['is'] = expectations[:is]
-    processed_result[expectations[:expect]] = expectations[:expectation]
+  if expected_exit_code
+    process_exit_code_result exit_code, expected_exit_code
+  elsif expected_output
+    process_output_result output, expected_output
   end
-
-  processed_result
 end
 
 def apply_tags(options)
