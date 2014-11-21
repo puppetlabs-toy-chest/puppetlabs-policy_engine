@@ -92,6 +92,6 @@ The directory where the test metadata and execution scripts will be kept
 * `script`: A script to run in text format.  This is similar to the content parameter for the [file type](https://docs.puppetlabs.com/references/latest/type.html#file-attribute-content)
 * `interpreter`: The interpreter on the system to run.  Defaults to */bin/sh*
 * `output_format`: What format the stdout is in from the execution script. Valid values are *string*, *json*, and *yaml*.  Defaults to *string*
-* `expected_output`: What the expected stdout output is.
-* `expected_exit_code`: What the expected exit code of the execution script is.  If specified, this parameter has precedence over the expected_output parameter.
+* `expected_output`: What the expected stdout output is. Takes a string, regex, or an array of strings/regexes.  Regexes must be in string format (i.e. '/my regex/')
+* `expected_exit_code`: What the expected exit code of the execution script is. Takes an integer or an array or integers.  If specified, this parameter has precedence over the expected_output parameter.
 * `tags`: Arbitrary tags for the policy test. Every test is automatically tagged with *policy_engine*
