@@ -1,13 +1,14 @@
 HOSTS:
-  centos-65-x64:
+  centos-7-x64:
     roles:
       - master
       - agent
       - default
-    platform: el-5-x86_64
-    box:  puppetlabs/centos-6.5-64-nocm
+    platform: el-7-x86_64
+    box:  puppetlabs/centos-7.0-64-nocm
     hypervisor: vagrant
     provider: vmware_fusion
     ip: 10.255.105.95
+    auto_config: false
 CONFIG:
   type: foss
