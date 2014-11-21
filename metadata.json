@@ -1,17 +1,27 @@
 {
   "name": "puppetlabs-policy_engine",
   "version": "0.0.1",
-  "author": "Carl Caum <carl@puppetlabs.com>",
-  "license": "Licensed under (Apache 2.0)",
+  "author": "Puppet Labs",
   "summary": "A module for managing policy tests as structured facts",
+  "license": "Licensed under (Apache 2.0)",
   "source": "https://github.com/puppetlabs/puppetlabs-policy-engine",
-  "project_page": "https://forge.puppetlabs.com/puppetlabs/policy-engine",
+  "project_page": "https://github.com/puppetlabs/puppetlabs-policy-engine",
   "issues_url": "https://tickets.puppetlabs.com/browse/MODULES",
-  "tags": ["policy", "security", "compliance"],
+  "tags": [
+    "policy",
+    "security",
+    "compliance"
+  ],
   "operatingsystem_support": [
     {
-    "operatingsystem":"RedHat",
-    "operatingsystemrelease":[ "6.0", "7.0" ]
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
     }
-   ]
+  ],
+  "dependencies": [
+
+  ]
 }
