@@ -6,7 +6,7 @@
   "summary": "A module for managing policy tests as structured facts",
   "source": "https://github.com/puppetlabs/puppetlabs-policy-engine",
   "project_page": "https://forge.puppetlabs.com/puppetlabs/policy-engine",
-  "issues_url": "https://github.com/puppetlabs/puppetlabs-policy-engine/issues",
+  "issues_url": "https://tickets.puppetlabs.com/browse/MODULES",
   "tags": ["policy", "security", "compliance"],
   "operatingsystem_support": [
     {
