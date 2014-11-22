@@ -34,9 +34,8 @@ The user can specify an interpreter to use to run the code (defaults to
 /bin/sh).
 
 To validate a test passes or fails, an expectation can be specified. An expectation can be the following:
-* Stdout output. The output can be parsed as a string, JSON, or YAML
-* Stderr output. The output is parsed as a string
-* Exit code. The exit code of the script execution
+* Stdout output. The output can be parsed as a string, JSON, or YAML.  Strings can be matched completely or against a regular expression. An array can be specified of acceptable strings and regexes.
+* Exit code. The exit code of the script execution.  An array can be specified of acceptable exit codes.
 
 **Execute a command and expect no output**
 ```
