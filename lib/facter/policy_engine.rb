@@ -91,22 +91,26 @@ def parse_regex(regex)
   Regexp.new(new_regex)
 end
 
-def process_output_result(output, expected_output)
+def process_output_result(output, expected_output, format)
   test_result = 'fail'
 
-  if expected_output.is_a?(Array)
-    expected_output.each do |e|
-      if (is_regex?(e) and output =~ parse_regex(e)) or output == e
-        test_result = 'pass'
-        break
+  if format == 'string'
+    if expected_output.is_a?(Array)
+      expected_output.each do |e|
+        if (is_regex?(e) and output =~ parse_regex(e)) or output == e
+          test_result = 'pass'
+          break
+        end
+      end
+    elsif expected_output.is_a?(String)
+      if is_regex?(expected_output)
+        test_result = output =~ parse_regex(expected_output) ? 'pass' : 'fail'
+      else
+        test_result = output == expected_output ? 'pass' : 'fail'
       end
     end
-  elsif expected_output.is_a?(String)
-    if is_regex?(expected_output)
-      test_result = output =~ parse_regex(expected_output) ? 'pass' : 'fail'
-    else
-      test_result = output == expected_output ? 'pass' : 'fail'
-    end
+  else
+    test_result = output == expected_output ? 'pass' : 'fail'
   end
 
   format_result(test_result, output, 'expected_output', expected_output)
@@ -117,12 +121,12 @@ def process_result(options)
   exit_code = options[:exit_code]
   expected_exit_code = options[:expected_exit_code]
   expected_output = options[:expected_output]
-
+  format = options[:format]
 
   if expected_exit_code
     process_exit_code_result exit_code, expected_exit_code
   elsif expected_output
-    process_output_result output, expected_output
+    process_output_result output, expected_output, format
   end
 end
 
@@ -145,10 +149,11 @@ tests.each do |test|
 
       execution_result = parse_output :output_format => test['config'][:output_format], :stdout => output
 
-      result = process_result :expected_exit_code => test['config'][:expected_exit_code], 
-        :expected_output => test['config'][:expected_output], 
-        :output => execution_result, 
-        :exit_code => exit_code
+      result = process_result :expected_exit_code => test['config'][:expected_exit_code],
+        :expected_output => test['config'][:expected_output],
+        :output => execution_result,
+        :exit_code => exit_code,
+        :format => test['config'][:output_format]
 
       apply_tags :tags => test['config'][:tags], :result => result
     end
