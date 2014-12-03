@@ -1,0 +1,23 @@
+["and",
+  ["in", "name",
+    ["extract", "name",
+      ["select-fact-contents",
+       ["and",
+         ["~>", "path", [".*", "tags", ".*"]],
+         ["=", "value", "policy_engine"],
+         ["=", "environment", "production"]
+       ]
+      ]
+    ]
+  ],
+  ["in", "name",
+    ["extract", "name",
+      ["select-fact-contents",
+        ["and",
+           ["~>", "path", [".*", "result"]],
+           ["=", "value", "fail"]
+        ]
+      ]
+    ]
+  ]
+]
