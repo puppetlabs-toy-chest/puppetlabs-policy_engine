@@ -65,6 +65,25 @@ policy_engine::test { 'ruby_test':
 }
 ```
 
+##Retrieving test results
+
+Since each test is a Facter fact, they can be retrieved using Facter or PuppetDB.
+
+**Run with Facter**
+The Policy Engine Facter plugin is pluginsynced from the Puppet module.  To run
+the policy test, use the **-p** flat with Facter
+
+`facter -p policy_name`
+
+**Retrieve from PuppetDB** 
+If you're using PuppetDB, the puppet master pushes
+every node's facts each puppet agent run to PuppetDB.  This means PuppetDB can
+be queried for test results.  The examples directory has example PuppetDB queries.
+To retrieve, standard **curl**  can be used, or any other tool that perform REST
+calls.
+
+`curl -X GET http://puppetdb.example.com:8080/v4/facts --data-urlencode query@./failed_tests`
+
 ##Reference
 
 ###Classes
