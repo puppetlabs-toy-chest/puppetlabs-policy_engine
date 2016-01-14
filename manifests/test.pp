@@ -26,13 +26,13 @@ define policy_engine::test(
       $tags,
       "${policy_engine::test_dir}/metadata/${name}.yml",
       "${policy_engine::test_dir}/payloads/${name}"),
-    mode    => 0440,
+    mode    => '0440',
   }
 
   file { "${policy_engine::test_dir}/payloads/${name}":
     ensure  => $ensure,
     content => $script,
     source  => $source,
-    mode    => 0550,
+    mode    => '0550',
   }
 }

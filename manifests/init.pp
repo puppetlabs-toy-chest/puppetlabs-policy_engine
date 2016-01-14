@@ -9,7 +9,7 @@ class policy_engine (
   file { "${::policy_engine_config_dir}/config.yml":
     ensure  => file,
     content => template('policy_engine/policy_config.erb'),
-    mode    => 0440,
+    mode    => '0440',
   }
 
   file { $test_dir:
