@@ -28,6 +28,8 @@ is as follows:
 `{'result' => 'fail', 'tags' => ['policy_engine','tag1','tag2'], 'expected_output' => [], 'is' => ['example','output']}`
 
 ##Declaring Policy Tests 
+**Note**: This module only support Puppet 4+ and Puppet Enterprise 2015.2+
+
 Tests can be written in any language the system they run on supports. The code
 that performs the test can range from a single shell command to a script file.
 The user can specify an interpreter to use to run the code (defaults to
