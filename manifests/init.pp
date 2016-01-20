@@ -1,5 +1,5 @@
 class policy_engine (
-  $test_dir = "${::puppet_vardir}/policy_tests",
+  String $test_dir = "${::puppet_vardir}/policy_tests",
 ) {
 
   file { $::policy_engine_config_dir:

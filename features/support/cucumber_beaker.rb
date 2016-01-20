@@ -68,8 +68,7 @@ class Cucumber::Beaker
   end
 
   def puppet_module_install_on_all_hosts(opts)
-    puppet_module_install opts
-    pluginsync
+    copy_module_to 'master', :source => opts[:source], :target_module_path => '/etc/puppetlabs/code/modules'
   end
 
   def puppet_installed?
@@ -83,8 +82,12 @@ class Cucumber::Beaker
   end
 
   def install_masters
-    install_package master, 'puppet-server'
-    on master, 'service puppetmaster start'
+    # Obviously this only works on RHEL 7 hosts. This needs to be fixed for more
+    # OSes in the future
+    rhel_7_pkg = 'https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm'
+    on master, "sudo rpm -ivh #{rhel_7_pkg}; yum makecache"
+    install_package master, 'puppetserver'
+    on master, 'puppet resource service puppetserver ensure=running'
   end
 
   def set_hosts

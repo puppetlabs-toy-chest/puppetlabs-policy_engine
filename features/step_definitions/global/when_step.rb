@@ -11,7 +11,7 @@ end
 When(/^the test is run$/) do
   #Make sure pluginsync as occured
   pluginsync
-  
-  evaluate = shell("facter -p #{@test_name}").stdout.chomp
-  @test_result = eval(evaluate)
+
+  evaluate = shell("facter -p --json #{@test_name}").stdout
+  @test_result = JSON::parse(evaluate)[@test_name]
 end
