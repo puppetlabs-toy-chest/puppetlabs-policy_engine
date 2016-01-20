@@ -1,11 +1,11 @@
 define policy_engine::test(
-  $ensure = present,
-  $source = undef,
-  $script = undef,
-  $interpreter = '/bin/sh',
-  $output_format = 'string',
-  $expected_output = undef,
-  $expected_exit_code = undef,
+  Enum['present','absent'] $ensure = present,
+  Variant[String,Undef] $source = undef,
+  Variant[String,Undef] $script = undef,
+  String $interpreter = '/bin/sh',
+  Enum['string','json','yaml'] $output_format = 'string',
+  Variant[String,Hash,Array,Undef] $expected_output = undef,
+  Variant[Integer,Array[Integer],Undef] $expected_exit_code = undef,
   $tags = [],
 ) {
 
