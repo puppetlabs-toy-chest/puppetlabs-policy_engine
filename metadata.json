@@ -7,6 +7,10 @@
   "source": "https://github.com/puppetlabs/puppetlabs-policy-engine",
   "project_page": "https://github.com/puppetlabs/puppetlabs-policy-engine",
   "issues_url": "https://github.com/puppetlabs/puppetlabs-policy_engine/issues",
+  "dependencies": [
+  
+  ],
+  "data_provider": null,
   "tags": [
     "policy",
     "security",
@@ -20,8 +24,5 @@
         "7"
       ]
     }
-  ],
-  "dependencies": [
-
   ]
 }
