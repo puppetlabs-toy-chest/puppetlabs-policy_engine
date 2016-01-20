@@ -4,32 +4,32 @@ Feature: Write policy tests in any language
   so that I don’t have to learn a new language to write policy tests
 
   Scenario: Inline script is wrong on node
-    Given an inline shell script that runs 'ls -l /opt'
+    Given an inline shell script that runs 'ls -l /tmp'
     And a policy test using the inline script is declared
     And the script is 'echo wrong' on the node
     When puppet runs
-    Then the script should be 'ls -l /opt'
+    Then the script should be 'ls -l /tmp'
 
   Scenario: Inline script is correct on node
-    Given an inline shell script that runs 'ls -l /opt'
+    Given an inline shell script that runs 'ls -l /tmp'
     And a policy test using the inline script is declared
-    And the script is 'ls -l /opt' on the node
+    And the script is 'ls -l /tmp' on the node
     When puppet runs
-    Then the script should be 'ls -l /opt'
+    Then the script should be 'ls -l /tmp'
 
   Scenario: Inline script succeeds
-    Given an inline shell script that runs 'ls -l /opt'
+    Given an inline shell script that runs 'ls -l /tmp'
     And a policy test using the inline script is declared
     And the expectation is the script output returns an empty string
     And the policy test exists on the node
-    And the /opt directory is empty
+    And the /tmp directory is empty
     When the test is run
     Then the test should pass
 
   Scenario: Inline script fails
-    Given an inline shell script that runs 'ls -l /opt'
+    Given an inline shell script that runs 'ls -l /tmp'
     And the expectation is the script output returns an empty string
-    And the /opt directory is not empty
+    And the /tmp directory is not empty
     And a policy test using the inline script is declared
     And the policy test exists on the node
     When the test is run
